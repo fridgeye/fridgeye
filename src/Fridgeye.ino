@@ -13,10 +13,19 @@ bool isDoorOpen()
   }
 }
 
+double getTemperatureInC()
+{
+  int tmp36Value = analogRead(A4);
+  return (tmp36Value * 0.0008 - 0.5) / 0.010;
+}
+
 void setup()
 {
   // Configure the pin connected to thte photocell as an analog input
   pinMode(A0, INPUT);
+
+  // Configure the pin connected to the TMP36 as an anolog input
+  pinMode(A4, INPUT);
 
   // Open the USB serial port
   Serial.begin(9600);
@@ -46,6 +55,9 @@ void loop()
       Particle.publish("fridge-door-closed", PRIVATE);
     }
   }
+
+  // Report the temperature
+  Serial.printlnf("Temperature: %.2f", getTemperatureInC());
 
   delay(1000);
 }
