@@ -1,4 +1,5 @@
-bool currentDoorState = false;
+bool currentDoorState;
+double currentTemperature;
 
 bool isDoorOpen()
 {
@@ -26,6 +27,9 @@ void setup()
 
   // Configure the pin connected to the TMP36 as an anolog input
   pinMode(A4, INPUT);
+
+  // Register currentTemperature with the Particle Cloud
+  Particle.variable("fridge-temp", currentTemperature);
 
   // Open the USB serial port
   Serial.begin(9600);
@@ -57,7 +61,8 @@ void loop()
   }
 
   // Report the temperature
-  Serial.printlnf("Temperature: %.2f", getTemperatureInC());
+  currentTemperature = getTemperatureInC();
+  Serial.printlnf("Temperature: %.2f", currentTemperature);
 
   delay(1000);
 }
