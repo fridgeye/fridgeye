@@ -23,9 +23,10 @@ double getTemperatureInC()
   return (tmp36Value * 0.0008 - 0.5) / 0.010;
 }
 
-void soundTheAlarm()
+int soundTheAlarm(String data)
 {
   tone(D3, 880, 3000);
+  return 0;
 }
 
 void setup()
@@ -38,6 +39,8 @@ void setup()
 
   // Register currentTemperature with the Particle Cloud
   Particle.variable("fridge-temp", currentTemperature);
+
+  Particle.function("alarm", soundTheAlarm);
 
   // Open the USB serial port
   Serial.begin(9600);
@@ -81,7 +84,7 @@ void loop()
     long now = millis();
     if (now - doorOpenedStart > 30000)
     {
-      soundTheAlarm();
+      soundTheAlarm("");
     }
   }
 
