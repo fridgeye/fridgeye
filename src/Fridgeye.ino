@@ -1,5 +1,8 @@
+#define DOOR_OPEN true
+
 bool currentDoorState;
 double currentTemperature;
+long doorOpenedStart;
 
 bool isDoorOpen()
 {
@@ -18,6 +21,11 @@ double getTemperatureInC()
 {
   int tmp36Value = analogRead(A4);
   return (tmp36Value * 0.0008 - 0.5) / 0.010;
+}
+
+void soundTheAlarm()
+{
+  tone(D3, 880, 3000);
 }
 
 void setup()
@@ -50,6 +58,9 @@ void loop()
     currentDoorState = newDoorState;
     if(currentDoorState)
     {
+      // Start the door open time for the alarm feature
+      doorOpenedStart = millis();
+
       Serial.println("Door Open");
       Particle.publish("fridge-door-open", PRIVATE);
     }
@@ -63,6 +74,16 @@ void loop()
   // Report the temperature
   currentTemperature = getTemperatureInC();
   Serial.printlnf("Temperature: %.2f", currentTemperature);
+
+  // Has the door been open too long
+  if (currentDoorState == DOOR_OPEN)
+  {
+    long now = millis();
+    if (now - doorOpenedStart > 30000)
+    {
+      soundTheAlarm();
+    }
+  }
 
   delay(1000);
 }
